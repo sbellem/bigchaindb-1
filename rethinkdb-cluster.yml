@@ -1,0 +1,15 @@
+atom:
+  image: rethinkdb
+  ports:
+    - "58080:8080"
+    - "28015"
+  command: rethinkdb --bind all
+
+electron:
+  image: rethinkdb
+  ports:
+    - "8080"
+    - "28015"
+  links:
+    - atom
+  command: rethinkdb --directory rethinkdb_data2 --join atom:29015
