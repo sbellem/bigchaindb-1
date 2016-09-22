@@ -1,3 +1,7 @@
+from collections import namedtuple
+
+from rethinkdb.ast import RqlQuery
+
 import pytest
 
 
@@ -25,7 +29,6 @@ def config(request, monkeypatch):
 
 def test_bigchain_class_default_initialization(config):
     from bigchaindb.core import Bigchain
-    from bigchaindb.consensus import BaseConsensusRules
     bigchain = Bigchain()
     assert bigchain.host == config['database']['host']
     assert bigchain.port == config['database']['port']
@@ -33,13 +36,11 @@ def test_bigchain_class_default_initialization(config):
     assert bigchain.me == config['keypair']['public']
     assert bigchain.me_private == config['keypair']['private']
     assert bigchain.nodes_except_me == config['keyring']
-    assert bigchain.consensus == BaseConsensusRules
     assert bigchain._conn is None
 
 
 def test_bigchain_class_initialization_with_parameters(config):
     from bigchaindb.core import Bigchain
-    from bigchaindb.consensus import BaseConsensusRules
     init_kwargs = {
         'host': 'some_node',
         'port': '12345',
@@ -55,7 +56,6 @@ def test_bigchain_class_initialization_with_parameters(config):
     assert bigchain.me == init_kwargs['public_key']
     assert bigchain.me_private == init_kwargs['private_key']
     assert bigchain.nodes_except_me == init_kwargs['keyring']
-    assert bigchain.consensus == BaseConsensusRules
     assert bigchain._conn is None
 
 
@@ -92,6 +92,7 @@ def test_transaction_exists(monkeypatch, items, exists):
     assert bigchain.transaction_exists('txid') is exists
 
 
+@pytest.mark.skip(reason='until tim decides')
 def test_write_transaction_no_sideffects(b):
     from rethinkdb.errors import ReqlOpFailedError
     transaction = {'id': 'abc'}

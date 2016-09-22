@@ -10,6 +10,7 @@ from bigchaindb_common.util import gen_timestamp, serialize
 from bigchaindb_common.transaction import TransactionLink
 
 import rethinkdb as r
+import rapidjson
 
 import bigchaindb
 from bigchaindb.db.utils import Connection
@@ -64,7 +65,6 @@ class Bigchain(object):
         self.me_private = private_key or bigchaindb.config['keypair']['private']
         self.nodes_except_me = keyring or bigchaindb.config['keyring']
         self.backlog_reassign_delay = backlog_reassign_delay or bigchaindb.config['backlog_reassign_delay']
-        self.consensus = config_utils.load_consensus_plugin(consensus_plugin)
         # change RethinkDB read mode to majority.  This ensures consistency in query results
         self.read_mode = 'majority'
 
@@ -362,7 +362,7 @@ class Bigchain(object):
                 r.table('bigchain', read_mode=self.read_mode)
                 .concat_map(lambda doc: doc['block']['transactions'])
                 .filter(lambda transaction: transaction['transaction']['fulfillments']
-                    .contains(lambda fulfillment: fulfillment['input'] == tx_input)))
+                    .contains(lambda fulfillment: fulfillment['input'] == {'txid': txid, 'cid': cid})))
 
         transactions = list(response)
 
@@ -491,7 +491,7 @@ class Bigchain(object):
         """
         votes = list(self.connection.run(
             r.table('votes', read_mode=self.read_mode)
-            .get_all([block['id'], self.me], index='block_and_voter')))
+            .get_all([block_id, self.me], index='block_and_voter')))
 
         if len(votes) > 1:
             raise exceptions.MultipleVotesError('Block {block_id} has {n_votes} votes from public key {me}'
@@ -513,10 +513,9 @@ class Bigchain(object):
             block (Block): block to write to bigchain.
         """
 
-        block_serialized = rapidjson.dumps(block)
         self.connection.run(
                 r.table('bigchain')
-                .insert(r.json(block_serialized), durability=durability))
+                .insert(r.json(block.to_str()), durability=durability))
 
     def transaction_exists(self, transaction_id):
         response = self.connection.run(
@@ -619,9 +618,10 @@ class Bigchain(object):
 
         except r.ReqlNonExistenceError:
             # return last vote if last vote exists else return Genesis block
-            return list(self.connection.run(
+            block = list(self.connection.run(
                 r.table('bigchain', read_mode=self.read_mode)
                 .filter(util.is_genesis_block)))[0]
+            return Block.from_dict(block)
 
         # Now the fun starts. Since the resolution of timestamp is a second,
         # we might have more than one vote per timestamp. If this is the case
@@ -657,7 +657,7 @@ class Bigchain(object):
                 r.table('bigchain', read_mode=self.read_mode)
                 .get(last_block_id))
 
-        return res
+        return Block.from_dict(res)
 
     def get_unvoted_blocks(self):
         """Return all the blocks that have not been voted on by this node.
@@ -682,7 +682,7 @@ class Bigchain(object):
         """Tally the votes on a block, and return the status: valid, invalid, or undecided."""
 
         votes = self.connection.run(r.table('votes', read_mode=self.read_mode)
-            .between([block['id'], r.minval], [block['id'], r.maxval], index='block_and_voter'))
+            .between([block_id, r.minval], [block_id, r.maxval], index='block_and_voter'))
 
         votes = list(votes)
 
