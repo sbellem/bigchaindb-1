@@ -14,9 +14,6 @@ env:
   - DB=rethinkdb BIGCHAINDB_DATABASE_BACKEND=rethinkdb
   #- TOXENV=py34-rdb
   #- TOXENV=py35-rdb
-  - TOXENV=flake8
-  - TOXENV=docsroot
-  - TOXENV=docsserver
 
 matrix:
   exclude:
