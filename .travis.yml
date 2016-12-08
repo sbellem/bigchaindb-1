@@ -1,9 +1,10 @@
 language: python
 cache: pip
 
-#python:
+python:
 #  - 3.4
-#  - 3.5
+  - 3.5
+
 addons: 
   rethinkdb: '2.3.5'
 
