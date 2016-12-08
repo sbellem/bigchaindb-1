@@ -4,6 +4,8 @@ cache: pip
 #python:
 #  - 3.4
 #  - 3.5
+addons: 
+  rethinkdb: '2.3.5'
 
 env:
   #- TOXENV=py34-rdb
@@ -39,11 +41,11 @@ env:
 #    env: BIGCHAINDB_DATABASE_BACKEND=rethinkdb
 
 
-before_install: sudo .ci/travis-before-install.sh
+#before_install: sudo .ci/travis-before-install.sh
 
 install: .ci/travis-install.sh
 
-before_script: .ci/travis-before-script.sh
+#before_script: .ci/travis-before-script.sh
 
 #script: tox -e ${TOXENV}
 script: .ci/travis_script.sh
