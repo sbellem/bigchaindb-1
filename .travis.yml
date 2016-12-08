@@ -7,7 +7,7 @@ python:
 
 env:
   #- TOXENV=py34-mdb
-  - DB=mongodb BIGCHAINDB_DATABASE_BACKEND=rethinkdb
+  - DB=mongodb BIGCHAINDB_DATABASE_BACKEND=mongodb
   - DB=rethinkdb BIGCHAINDB_DATABASE_BACKEND=rethinkdb
   #- TOXENV=py34-rdb
   #- TOXENV=py35-rdb
