@@ -54,5 +54,6 @@ install:
 
 #script: tox -e ${TOXENV}
 script: .ci/travis_script.sh
+script: tox
 
 after_success: .ci/travis-after-success.sh
