@@ -1,21 +1,34 @@
-language: python3
+language: python
 cache: pip
+
+python:
+  - 3.4
+  - 3.5
 
 env:
   #- TOXENV=py34-mdb
-  - TOXENV=py35-mdb
+  - DB=mongodb BIGCHAINDB_DATABASE_BACKEND=rethinkdb
+  - DB=rethinkdb BIGCHAINDB_DATABASE_BACKEND=rethinkdb
   #- TOXENV=py34-rdb
   #- TOXENV=py35-rdb
-  #- TOXENV=flake8
-  #- TOXENV=docsroot
-  #- TOXENV=docsserver
+  - TOXENV=flake8
+  - TOXENV=docsroot
+  - TOXENV=docsserver
 
-before_install: sudo .ci/travis-before-install.sh
+matrix:
+  exclude:
+  - python: 3.4 
+  - env: TOXENV=flake8 
+         TOXENV=docsroot
+         TOXENV=docsserver
+
+#before_install: sudo .ci/travis-before-install.sh
 
 install: .ci/travis-install.sh
 
-before_script: .ci/travis-before-script.sh
+#before_script: .ci/travis-before-script.sh
 
-script: tox -e ${TOXENV}
+#script: tox -e ${TOXENV}
+script: .ci/travis_script.sh
 
 after_success: .ci/travis-after-success.sh
