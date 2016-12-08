@@ -18,9 +18,14 @@ env:
 matrix:
   exclude:
   - python: 3.4 
-  - env: TOXENV=flake8 
+    env: TOXENV=flake8 
          TOXENV=docsroot
          TOXENV=docsserver
+  include:
+  - env: DB=mongodb
+    services: mongodb
+  - env: DB=rethinkdb
+    addons: rethinkdb
 
 #before_install: sudo .ci/travis-before-install.sh
 
