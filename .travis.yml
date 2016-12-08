@@ -14,8 +14,8 @@ env:
     #- TOXENV=py34-mdb
     #- TOXENV=py35-mdb
   - TOXENV=flake8
-  - TOXENV=docsroot
-  - TOXENV=docsserver
+    #- TOXENV=docsroot
+    #- TOXENV=docsserver
 
 matrix:
   fast_finish: true
