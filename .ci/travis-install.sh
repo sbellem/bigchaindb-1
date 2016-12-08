@@ -16,7 +16,6 @@ pip install --upgrade pip
 #    pip install --upgrade codecov
 #fi
 
-
 if [[ -n ${TOXENV} ]]; then
     pip install --upgrade tox
 else
