@@ -41,7 +41,8 @@ env:
 #    env: BIGCHAINDB_DATABASE_BACKEND=rethinkdb
 
 
-before_install: sudo .ci/travis-before-install.sh
+before_install: sudo apt-get update -qq
+#sudo .ci/travis-before-install.sh
 
 install: .ci/travis-install.sh
 
