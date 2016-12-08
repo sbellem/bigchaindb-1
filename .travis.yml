@@ -23,8 +23,10 @@ matrix:
          TOXENV=docsserver
   include:
   - env: DB=mongodb
+         BIGCHAINDB_DATABASE_BACKEND=mongodb
     services: mongodb
   - env: DB=rethinkdb
+         BIGCHAINDB_DATABASE_BACKEND=rethinkdb
     addons: rethinkdb
 
 #before_install: sudo .ci/travis-before-install.sh
