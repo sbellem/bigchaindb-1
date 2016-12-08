@@ -26,13 +26,13 @@ matrix:
 #  - python: 3.4
 #    services: mongodb
 #    env: BIGCHAINDB_DATABASE_BACKEND=mongodb
-#  - python: 3.4
-#    addons: 
-#      rethinkdb: '2.3.5'
-#    env: BIGCHAINDB_DATABASE_BACKEND=rethinkdb
-#  - python: 3.5
-#    services: mongodb
-#    env: BIGCHAINDB_DATABASE_BACKEND=mongodb
+  - python: 3.4
+    addons: 
+      rethinkdb: '2.3.5'
+    env: BIGCHAINDB_DATABASE_BACKEND=rethinkdb
+  - python: 3.5
+    services: mongodb
+    env: BIGCHAINDB_DATABASE_BACKEND=mongodb
   - python: 3.5
     addons: 
       rethinkdb: '2.3.5'
@@ -42,7 +42,7 @@ matrix:
 before_install: sudo apt-get update -qq
 #sudo .ci/travis-before-install.sh
 
-#install: .ci/travis-install.sh
+install: .ci/travis-install.sh
 
 #before_script: .ci/travis-before-script.sh
 
