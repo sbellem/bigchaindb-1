@@ -1,11 +1,11 @@
 language: python
-cache: pip
+#cache: pip
 
-addons: 
-  rethinkdb: '2.3.5'
+#addons: 
+#  rethinkdb: '2.3.5'
 
 python:
-  - 3.4
+        #- 3.4
   - 3.5
 
 env:
@@ -13,7 +13,7 @@ env:
   #- TOXENV=py35-rdb
     #- TOXENV=py34-mdb
     #- TOXENV=py35-mdb
-  - TOXENV=flake8
+    #- TOXENV=flake8
     #- TOXENV=docsroot
     #- TOXENV=docsserver
 
@@ -21,9 +21,9 @@ matrix:
   fast_finish: true
   allow_failures:
   - env: BIGCHAINDB_DATABASE_BACKEND=mongodb
-  exclude:
-  - python: 3.4 
-    env: TOXENV=flake8 
+    #exclude:
+          #- python: 3.4 
+          #env: TOXENV=flake8 
 # - python: 3.4 
 #    env: TOXENV=docsroot
 #  - python: 3.4 
