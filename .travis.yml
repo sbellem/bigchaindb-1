@@ -1,4 +1,4 @@
-language: generic 
+language: python3
 cache: pip
 
 env:
