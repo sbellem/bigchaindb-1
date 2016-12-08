@@ -47,7 +47,10 @@ matrix:
 before_install: sudo apt-get update -qq
 #sudo .ci/travis-before-install.sh
 
-install: .ci/travis-install.sh
+#install: .ci/travis-install.sh
+install: 
+    - pip install -e .[test]
+    - pip install --upgrade codecov
 
 #before_script: .ci/travis-before-script.sh
 
