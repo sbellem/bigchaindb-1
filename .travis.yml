@@ -21,10 +21,11 @@ env:
 matrix:
   exclude:
   - python: 3.4 
-    env: 
-      - TOXENV=flake8 
-      - TOXENV=docsroot
-      - TOXENV=docsserver
+    env: TOXENV=flake8 
+  - python: 3.4 
+    env: TOXENV=docsroot
+  - python: 3.4 
+    env: TOXENV=docsserver
 #  include:
 #  - python: 3.4 
 #    services: mongodb
