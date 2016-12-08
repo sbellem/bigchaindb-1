@@ -1,30 +1,27 @@
 language: python
 cache: pip
 
-python: 3.5
-#  - 3.4
-
-addons: 
-  rethinkdb: '2.3.5'
+python:
+  - 3.4
+  - 3.5
 
 env:
-  - db=rethinkdb
   #- TOXENV=py34-rdb
   #- TOXENV=py35-rdb
     #- TOXENV=py34-mdb
     #- TOXENV=py35-mdb
-    #- TOXENV=flake8
-    #- TOXENV=docsroot
-    #- TOXENV=docsserver
+  - TOXENV=flake8
+  - TOXENV=docsroot
+  - TOXENV=docsserver
 
 matrix:
-#  exclude:
-#  - python: 3.4 
-#    env: TOXENV=flake8 
-#  - python: 3.4 
-#    env: TOXENV=docsroot
-#  - python: 3.4 
-#    env: TOXENV=docsserver
+  exclude:
+  - python: 3.4 
+    env: TOXENV=flake8 
+  - python: 3.4 
+    env: TOXENV=docsroot
+  - python: 3.4 
+    env: TOXENV=docsserver
   include:
 #  - python: 3.4
 #    services: mongodb
@@ -46,14 +43,10 @@ before_install: sudo apt-get update -qq
 #sudo .ci/travis-before-install.sh
 
 #install: .ci/travis-install.sh
-install:
-  - pip install --upgrade pip
-  - pip install --upgrade tox-travis
 
 #before_script: .ci/travis-before-script.sh
 
 #script: tox -e ${TOXENV}
 script: .ci/travis_script.sh
-script: tox
 
 after_success: .ci/travis-after-success.sh
