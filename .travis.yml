@@ -8,7 +8,7 @@ python:
         #- 3.4
   - 3.5
 
-env:
+#env:
   #- TOXENV=py34-rdb
   #- TOXENV=py35-rdb
     #- TOXENV=py34-mdb
