@@ -7,8 +7,6 @@ python:
 
 env:
   #- TOXENV=py34-mdb
-  - BIGCHAINDB_DATABASE_BACKEND=mongodb
-  - BIGCHAINDB_DATABASE_BACKEND=rethinkdb
   #- TOXENV=py34-rdb
   #- TOXENV=py35-rdb
   - TOXENV=flake8
