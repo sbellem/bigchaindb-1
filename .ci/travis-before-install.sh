@@ -11,3 +11,7 @@ elif [[ "${TOXENV}" == *-mdb ]]; then
     echo "deb http://repo.mongodb.org/apt/ubuntu "$(lsb_release -sc)"/mongodb-org/3.4 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-3.4.list
     apt-get update -qq
 fi
+
+wget https://github.com/miloyip/rapidjson/archive/v1.1.0.tar.gz -O /tmp/v1.1.0.tar.gz
+tar -xvf /tmp/v1.1.0.tar.gz
+export PATH=$PATH:$PWD/rapidjson-1.1.0/include/rapidjson/
