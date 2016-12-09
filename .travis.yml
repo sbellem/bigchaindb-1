@@ -6,10 +6,6 @@ python:
   - 3.5
 
 env:
-  #- TOXENV=py34-rdb
-  #- TOXENV=py35-rdb
-    #- TOXENV=py34-mdb
-    #- TOXENV=py35-mdb
   - TOXENV=flake8
   - TOXENV=docsroot
   - TOXENV=docsserver
@@ -26,9 +22,6 @@ matrix:
   - python: 3.4 
     env: TOXENV=docsserver
   include:
-#  - python: 3.4
-#    services: mongodb
-#    env: BIGCHAINDB_DATABASE_BACKEND=mongodb
   - python: 3.4
     addons: 
       rethinkdb: '2.3.5'
@@ -41,18 +34,10 @@ matrix:
       rethinkdb: '2.3.5'
     env: BIGCHAINDB_DATABASE_BACKEND=rethinkdb
 
-before_install:
-    - sudo apt-get update -qq
-    - wget https://github.com/miloyip/rapidjson/archive/v1.1.0.tar.gz -O /tmp/v1.1.0.tar.gz
-    - tar -xvf /tmp/v1.1.0.tar.gz
-    - sudo cp -r $PWD/rapidjson-1.1.0/include/rapidjson /usr/include/
-#sudo .ci/travis-before-install.sh
+before_install: .ci/travis-before-install.sh
 
 install: .ci/travis-install.sh
 
-#before_script: .ci/travis-before-script.sh
-
-#script: tox -e ${TOXENV}
 script: .ci/travis_script.sh
 
 after_success: .ci/travis-after-success.sh
