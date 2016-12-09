@@ -48,10 +48,12 @@ before_install: sudo .ci/travis-before-install.sh
 
 #install: .ci/travis-install.sh
 install: 
+    - sudo apt-get install rethinkdb
     - pip install --upgrade pip
     - pip install -e .[test]
     - pip install --upgrade codecov
 
+before_script: rethinkdb --daemon
 #before_script: .ci/travis-before-script.sh
 
 #script: tox -e ${TOXENV}
