@@ -43,12 +43,13 @@ python: 3.5
 #      rethinkdb: '2.3.5'
 #    env: BIGCHAINDB_DATABASE_BACKEND=rethinkdb
 
-before_install: sudo apt-get update -qq
+before_install: 
+  - sudo apt-get update -qq
+  - sudo apt-get install rapidjson-dev
 #sudo .ci/travis-before-install.sh
 
 #install: .ci/travis-install.sh
 install: 
-    - sudo apt-get install cmake
     - pip install --upgrade pip
     - pip install -e .[test]
     - pip install --upgrade codecov
