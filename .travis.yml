@@ -34,7 +34,7 @@ matrix:
       rethinkdb: '2.3.5'
     env: BIGCHAINDB_DATABASE_BACKEND=rethinkdb
 
-before_install: .ci/travis-before-install.sh
+before_install: sudo .ci/travis-before-install.sh
 
 install: .ci/travis-install.sh
 
