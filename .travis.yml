@@ -48,6 +48,7 @@ before_install: sudo apt-get update -qq
 
 #install: .ci/travis-install.sh
 install: 
+    - sudo apt-get install cmake
     - pip install --upgrade pip
     - pip install -e .[test]
     - pip install --upgrade codecov
