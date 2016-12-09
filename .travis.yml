@@ -1,8 +1,8 @@
 language: python
 #cache: pip
 
-addons: 
-  rethinkdb: '2.3.5'
+#addons: 
+#  rethinkdb: '2.3.5'
 
 python: 3.5
         #- 3.4
@@ -43,10 +43,8 @@ python: 3.5
 #      rethinkdb: '2.3.5'
 #    env: BIGCHAINDB_DATABASE_BACKEND=rethinkdb
 
-before_install: 
-  - sudo apt-get update -qq
-  - sudo apt-get install rapidjson-dev
-#sudo .ci/travis-before-install.sh
+before_install: sudo .ci/travis-before-install.sh
+#  - sudo apt-get update -qq
 
 #install: .ci/travis-install.sh
 install: 
