@@ -49,6 +49,9 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinxcontrib.httpdomain',
     'sphinx.ext.autosectionlabel',
+    'IPython.sphinxext.ipython_console_highlighting',
+    'IPython.sphinxext.ipython_directive',
+    'sphinxcontrib.examplecode',
     # Below are actually build steps made to look like sphinx extensions.
     # It was the easiest way to get it running with ReadTheDocs.
     'generate_schema_documentation',

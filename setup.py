@@ -39,6 +39,11 @@ docs_require = [
     'sphinx-rtd-theme>=0.1.9',
     'sphinxcontrib-httpdomain>=1.5.0',
     'sphinxcontrib-napoleon>=0.4.4',
+    'sphinxcontrib-examplecode',
+    'matplotlib',
+    'ipython',
+    'bigchaindb_driver',
+
 ]
 
 tests_require = [

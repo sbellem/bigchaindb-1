@@ -15,3 +15,4 @@ your choice, and then use the HTTP API directly to post transactions.
    The Python Driver <https://docs.bigchaindb.com/projects/py-driver/en/latest/index.html>
    Transaction CLI <https://docs.bigchaindb.com/projects/cli/en/latest/>
    example-apps
+   handcraft  

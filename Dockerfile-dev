@@ -1,6 +1,13 @@
 FROM python:3.5
 
-RUN apt-get update && apt-get install -y python3.4 vim
+RUN apt-get update && apt-get install -y python3.4 vim 
+
+WORKDIR /usr/src
+RUN apt-get install -y mercurial
+#RUN hg clone https://sbellem@bitbucket.org/birkenfeld/sphinx-contrib
+RUN hg clone https://sbellem@bitbucket.org/sbellem/sphinx-contrib
+WORKDIR /usr/src/sphinx-contrib/examplecode
+RUN python setup.py install
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
