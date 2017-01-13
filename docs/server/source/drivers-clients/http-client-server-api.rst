@@ -17,7 +17,7 @@ BigchainDB Root URL
 If you send an HTTP GET request to the BigchainDB Root URL
 e.g. ``http://localhost:9984``
 or ``https://example.com:9984``
-(with no ``/api/v0.9/`` on the end),
+(with no ``/api/v1/`` on the end),
 then you should get an HTTP response
 with something like the following in the body:
 
@@ -34,7 +34,7 @@ with something like the following in the body:
       ],
       "public_key": "AiygKSRhZWTxxYT4AfgKoTG4TZAoPsWoEt6C6bLq4jJR",
       "software": "BigchainDB",
-      "version": "0.9.0",
+      "version": "0.9.0"
     }
 
 
