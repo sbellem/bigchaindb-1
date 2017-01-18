@@ -66,11 +66,16 @@ Transactions
 
    Get the transaction with the ID ``tx_id``.
 
-   This endpoint returns only a transaction from the ``BACKLOG`` or a ``VALID`` or ``UNDECIDED``
-   block on ``bigchain``, if exists.
+   This endpoint will return the transaction only if it is found in a ``VALID``
+   block. To get a transaction that may be in the ``BACKLOG`` table or in an
+   ``UNDECIDED`` block (not yet voted on) the ``status`` query parameter must
+   be used.
 
    :param tx_id: transaction ID
    :type tx_id: hex string
+   :query string status: transaction status, one of ``'valid'``,
+                         ``'undecided'`` or ``'backlog'``, defaults to
+                         ``'valid'`` (case insensitive)
 
    **Example request**:
 
