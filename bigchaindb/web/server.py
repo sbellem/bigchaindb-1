@@ -4,6 +4,8 @@ The application is implemented in Flask and runs using Gunicorn.
 """
 
 import copy
+import logging
+import logging.handlers
 import multiprocessing
 
 from flask import Flask
@@ -45,6 +47,16 @@ class StandaloneApplication(gunicorn.app.base.BaseApplication):
 
     def load(self):
         return self.application
+
+    def run(self, logging_queue=None, *args, **kwargs):
+        h = logging.handlers.QueueHandler(logging_queue)
+        root = logging.getLogger()
+        root.addHandler(h)
+        root.setLevel(logging.DEBUG)
+        root.info('Starting BigchainDB HTTP API server!')
+        logger = logging.getLogger(__name__)
+        logger.info('xyz')
+        super().run()
 
 
 def create_app(*, debug=False, threads=4):
