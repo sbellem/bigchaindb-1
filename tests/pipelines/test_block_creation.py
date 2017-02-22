@@ -226,3 +226,49 @@ def test_full_pipeline(b, user_pk):
     block_len = len(block_doc.transactions)
     assert chained_block == block_doc
     assert number_assigned_to_others == 100 - block_len
+
+
+def test_pipeline_logs(b, user_pk, caplog):
+    from bigchaindb.models import Block, Transaction
+    from bigchaindb.pipelines.block import create_pipeline
+
+    outpipe = Pipe()
+
+    pipeline = create_pipeline()
+    pipeline.setup(outdata=outpipe)
+    inpipe = pipeline.items[0]
+
+    # include myself here, so that some tx are actually assigned to me
+    b.nodes_except_me = [b.me, 'aaa', 'bbb', 'ccc']
+    number_assigned_to_others = 0
+    for i in range(10):
+        tx = Transaction.create([b.me], [([user_pk], 1)],
+                                metadata={'msg': random.random()})
+        tx = tx.sign([b.me_private])
+
+        tx = tx.to_dict()
+
+        # simulate write_transaction
+        tx['assignee'] = random.choice(b.nodes_except_me)
+        if tx['assignee'] != b.me:
+            number_assigned_to_others += 1
+        tx['assignment_timestamp'] = time.time()
+        inpipe.put(tx)
+
+    assert inpipe.qsize() == 10
+
+    import ipdb; ipdb.set_trace()
+    pipeline.start()
+
+    import ipdb; ipdb.set_trace()
+    time.sleep(2)
+
+    pipeline.terminate()
+    block_doc = outpipe.get()
+    chained_block = b.get_block(block_doc.id)
+    chained_block = Block.from_dict(chained_block)
+
+    block_len = len(block_doc.transactions)
+    import ipdb; ipdb.set_trace()
+    assert chained_block == block_doc
+    assert number_assigned_to_others == 10 - block_len

@@ -43,6 +43,7 @@ class BlockPipeline:
             dict: The transaction if assigned to the current node,
             ``None`` otherwise.
         """
+        logger.info('filtering tx ...')
         if tx['assignee'] == self.bigchain.me:
             tx.pop('assignee')
             tx.pop('assignment_timestamp')
@@ -147,6 +148,7 @@ def create_pipeline():
     """Create and return the pipeline of operations to be distributed
     on different processes."""
 
+    logger.info('creating pipeline ...')
     block_pipeline = BlockPipeline()
 
     pipeline = Pipeline([
