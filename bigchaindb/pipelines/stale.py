@@ -20,7 +20,7 @@ class StaleTransactionMonitor:
         Methods of this class will be executed in different processes.
     """
 
-    def __init__(self, timeout=5, backlog_reassign_delay=None):
+    def __init__(self, timeout=5, backlog_reassign_delay=None, queue=None):
         """Initialize StaleTransaction monitor
 
         Args:
@@ -31,6 +31,7 @@ class StaleTransactionMonitor:
         """
         self.bigchain = Bigchain(backlog_reassign_delay=backlog_reassign_delay)
         self.timeout = timeout
+        self.queue = queue
 
     def check_transactions(self):
         """Poll backlog for stale transactions
@@ -38,6 +39,7 @@ class StaleTransactionMonitor:
         Returns:
             txs (list): txs to be re assigned
         """
+        logger.info('check transaction ...')
         sleep(self.timeout)
         for tx in self.bigchain.get_stale_transactions():
             yield tx
@@ -54,7 +56,7 @@ class StaleTransactionMonitor:
         return tx
 
 
-def create_pipeline(timeout=5, backlog_reassign_delay=5):
+def create_pipeline(timeout=5, backlog_reassign_delay=5, queue=None):
     """Create and return the pipeline of operations to be distributed
     on different processes."""
 
@@ -62,16 +64,17 @@ def create_pipeline(timeout=5, backlog_reassign_delay=5):
                                   backlog_reassign_delay=backlog_reassign_delay)
 
     monitor_pipeline = Pipeline([
-        Node(stm.check_transactions),
-        Node(stm.reassign_transactions)
+        Node(stm.check_transactions, queue=queue),
+        Node(stm.reassign_transactions, queue=queue)
     ])
 
     return monitor_pipeline
 
 
-def start(timeout=5, backlog_reassign_delay=None):
+def start(timeout=5, backlog_reassign_delay=None, queue=None):
     """Create, start, and return the block pipeline."""
     pipeline = create_pipeline(timeout=timeout,
-                               backlog_reassign_delay=backlog_reassign_delay)
+                               backlog_reassign_delay=backlog_reassign_delay,
+                               queue=queue)
     pipeline.start()
     return pipeline

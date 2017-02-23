@@ -22,18 +22,18 @@ BANNER = """
 """
 
 
-def start():
+def start(queue=None):
     logger.info('Initializing BigchainDB...')
 
     # start the processes
     logger.info('Starting block')
-    block.start()
+    bp = block.start(queue=queue)
 
     logger.info('Starting voter')
     vote.start()
 
     logger.info('Starting stale transaction monitor')
-    stale.start()
+    stale.start(queue=queue)
 
     logger.info('Starting election')
     election.start()

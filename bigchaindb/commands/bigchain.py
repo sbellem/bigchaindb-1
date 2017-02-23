@@ -178,8 +178,36 @@ def run_start(args):
 
     # TODO setup logging -- pass logging config, extracted out from main config
     setup_logging()
+    #logger = logging.getLogger(__name__)
 
-    logger = logging.getLogger(__name__)
+    # THREAD-BASED QUEUE LISTENER
+    from bigchaindb.log.setup import logger_thread, config_listener
+    import threading
+    from multiprocessing import Queue
+    import logging.handlers
+    q = Queue()
+    #qh = logging.handlers.QueueHandler(q)
+    #root = logging.getLogger()
+    #root.addHandler(qh)
+    lp = threading.Thread(target=logger_thread, args=(q, config_listener))
+    lp.start()
+
+    # PROCESS-BASED QUEUE LISTENER
+    #from multiprocessing import Event, Process, Queue
+    #from bigchaindb.log.setup import listener_process, config_listener
+
+    #q = Queue()
+
+    #qh = logging.handlers.QueueHandler(q)
+    #root = logging.getLogger()
+    #root.addHandler(qh)
+
+    #stop_event = Event()
+    #lp = Process(target=listener_process, name='listener',
+    #             args=(q, stop_event, config_listener))
+    #lp.start()
+
+    logger = logging.getLogger('setup')
 
     if args.allow_temp_keypair:
         if not (bigchaindb.config['keypair']['private'] or
@@ -208,7 +236,7 @@ def run_start(args):
 
     logger.info('Starting BigchainDB main process with public key %s',
                 bigchaindb.config['keypair']['public'])
-    processes.start()
+    processes.start(queue=q)
 
 
 def _run_load(tx_left, stats):

@@ -43,6 +43,7 @@ class BlockPipeline:
             dict: The transaction if assigned to the current node,
             ``None`` otherwise.
         """
+        logger.info('filter tx ...')
         if tx['assignee'] == self.bigchain.me:
             tx.pop('assignee')
             tx.pop('assignment_timestamp')
@@ -107,6 +108,7 @@ class BlockPipeline:
             :class:`~bigchaindb.models.Block`: The block,
             if a block is ready, or ``None``.
         """
+        logger.info('create tx ...')
         if tx:
             self.txs.append(tx)
         if len(self.txs) == 1000 or (timeout and self.txs):
@@ -143,7 +145,7 @@ class BlockPipeline:
         return block
 
 
-def create_pipeline():
+def create_pipeline(queue=None):
     """Create and return the pipeline of operations to be distributed
     on different processes."""
 
@@ -151,7 +153,7 @@ def create_pipeline():
 
     pipeline = Pipeline([
         Pipe(maxsize=1000),
-        Node(block_pipeline.filter_tx),
+        Node(block_pipeline.filter_tx, queue=queue),
         Node(block_pipeline.validate_tx, fraction_of_cores=1),
         Node(block_pipeline.create, timeout=1),
         Node(block_pipeline.write),
@@ -167,9 +169,9 @@ def get_changefeed():
                                   ChangeFeed.INSERT | ChangeFeed.UPDATE)
 
 
-def start():
+def start(queue=None):
     """Create, start, and return the block pipeline."""
-    pipeline = create_pipeline()
+    pipeline = create_pipeline(queue=queue)
     pipeline.setup(indata=get_changefeed())
     pipeline.start()
     return pipeline
