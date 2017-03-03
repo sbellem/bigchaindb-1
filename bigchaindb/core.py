@@ -412,33 +412,18 @@ class Bigchain(object):
         """
         # get all transactions in which owner is in the `owners_after` list
         response = backend.query.get_owned_ids(self.connection, owner)
-        links = []
+        return [
+            TransactionLink(tx['id'], index)
+            for tx in response
+            if not self.is_tx_block_invalid(tx['id'])
+            for index, output in enumerate(tx['outputs'])
+            if utils.output_has_owner(output, owner)
+        ]
 
-        for tx in response:
-            # disregard transactions from invalid blocks
-            validity = self.get_blocks_status_containing_tx(tx['id'])
-            if Bigchain.BLOCK_VALID not in validity.values():
-                if Bigchain.BLOCK_UNDECIDED not in validity.values():
-                    continue
-
-            # NOTE: It's OK to not serialize the transaction here, as we do not
-            # use it after the execution of this function.
-            # a transaction can contain multiple outputs so we need to iterate over all of them
-            # to get a list of outputs available to spend
-            for index, output in enumerate(tx['outputs']):
-                # for simple signature conditions there are no subfulfillments
-                # check if the owner is in the condition `owners_after`
-                if len(output['public_keys']) == 1:
-                    if output['condition']['details']['public_key'] == owner:
-                        tx_link = TransactionLink(tx['id'], index)
-                else:
-                    # for transactions with multiple `public_keys` there will be several subfulfillments nested
-                    # in the condition. We need to iterate the subfulfillments to make sure there is a
-                    # subfulfillment for `owner`
-                    if utils.condition_details_has_owner(output['condition']['details'], owner):
-                        tx_link = TransactionLink(tx['id'], index)
-                links.append(tx_link)
-        return links
+    def is_tx_block_invalid(self, txid):
+        validity = self.get_blocks_status_containing_tx(txid)
+        return (Bigchain.BLOCK_VALID not in validity.values() and
+                Bigchain.BLOCK_UNDECIDED not in validity.values())
 
     def get_owned_ids(self, owner):
         """Retrieve a list of ``txid`` s that can be used as inputs.
