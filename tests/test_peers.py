@@ -64,13 +64,17 @@ def test_peers(alice, bob):
         print('transactions left for slowest node: ' +
               str(TX_COUNT - len(peer_txids[mdb3.address])), end='\n\n')
         sleep(1)
-
+    print(100*'1')
     #timeout = 0
     while (mdb1.bigchain.backlog.count({'version': '1.0'}) < 2*TX_COUNT or
            mdb2.bigchain.backlog.count({'version': '1.0'}) < 2*TX_COUNT or
            mdb3.bigchain.backlog.count({'version': '1.0'}) < 2*TX_COUNT):
+        print('mdb1: {}'.format(mdb1.bigchain.backlog.count({'version': '1.0'})))
+        print('mdb2: {}'.format(mdb2.bigchain.backlog.count({'version': '1.0'})))
+        print('mdb3: {}'.format(mdb3.bigchain.backlog.count({'version': '1.0'})))
         sleep(1)
 
+    print(100*'2')
     # check that mdb-1 is up to date
     assert mdb2.bigchain.backlog.count({'version': '1.0'}) == 2*TX_COUNT
     assert mdb3.bigchain.backlog.count({'version': '1.0'}) == 2*TX_COUNT
@@ -82,6 +86,138 @@ def test_peers(alice, bob):
     #        assert peer.bigchain.backlog.find_one({'id': txid}), txid
     #        assert mdb1.bigchain.backlog.find_one({'id': txid}), txid
 
+    print(100*'3')
     for peer in (mdb1, mdb2, mdb3):
         for txid in all_txids:
             assert peer.bigchain.backlog.find_one({'id': txid}), txid
+
+
+def test_get_spent():
+    from bigchaindb.core import Bigchain
+    from bigchaindb.models import Transaction
+    from bigchaindb.common.crypto import generate_key_pair
+    alice, bob = generate_key_pair(), generate_key_pair()
+
+    b = Bigchain()
+    #mdb1 = MongoClient('mdb-1')
+
+    create_tx = Transaction.create(
+        [alice.public_key],
+        [([alice.public_key], 1)],
+        asset=dict(time=time()),
+    ).sign([alice.private_key])
+    #mdb1.bigchain.backlog.insert_one(create_tx.to_dict())
+    b.write_transaction(create_tx)
+
+    assert not b.get_spent_from_backlog(create_tx.id, 0)
+
+    transfer_tx = Transaction.transfer(
+        create_tx.to_inputs(),
+        [([bob.public_key], 1)],
+        asset_id=create_tx.id,
+    ).sign([alice.private_key])
+    b.write_transaction(transfer_tx)
+    #mdb1.bigchain.backlog.insert_one(transfer_tx.to_dict())
+    assert b.get_spent_from_backlog(create_tx.id, 0)
+
+
+def test_simple_double_spend_conflict_detection():
+    """By double spend conflict is meant that a syncing node receives a
+    double spending transaction from another node. So the question is
+    then: which one is "correct"? Two main things need to happen:
+
+        1. Detect the divergence
+        2. Resolve the conflict so that the nodes recover consistency
+
+    In this simple test, we setup the syncing node with one transfer
+    transaction, and we write to another a conflicting transaction.
+    Upon syncing, the syncing node should detect the conflict.
+
+    The test should pass if the conflict is detected.
+
+    The test is NOT concerned with resolving the conflict. This is will
+    be treated in a another test.
+
+    """
+    from bigchaindb.core import Bigchain
+    from bigchaindb.models import Transaction
+    from bigchaindb.common.crypto import generate_key_pair
+    alice, bob = generate_key_pair(), generate_key_pair()
+    carol = generate_key_pair()
+
+    b = Bigchain()
+    mdb1 = MongoClient('mdb-1')
+    mdb2 = MongoClient('mdb-2')
+
+    create_tx = Transaction.create(
+        [alice.public_key],
+        [([alice.public_key], 1)],
+        asset=dict(time=time()),
+    ).sign([alice.private_key])
+    print(create_tx.id)
+    mdb1.bigchain.backlog.insert_one(create_tx.to_dict())
+    #b.write_transaction(create_tx)
+
+    #assert not b.get_spent_from_backlog(create_tx.id, 0)
+
+    transfer_tx = Transaction.transfer(
+        create_tx.to_inputs(),
+        [([bob.public_key], 1)],
+        asset_id=create_tx.id,
+    ).sign([alice.private_key])
+    print(transfer_tx.id)
+    mdb1.bigchain.backlog.insert_one(transfer_tx.to_dict())
+    conflicting_transfer_tx = Transaction.transfer(
+        create_tx.to_inputs(),
+        [([carol.public_key], 1)],
+        asset_id=create_tx.id,
+    ).sign([alice.private_key])
+    print(conflicting_transfer_tx.id)
+    #b.write_transaction(transfer_tx)
+    #assert b.get_spent_from_backlog(create_tx.id, 0)
+    mdb2.bigchain.backlog.insert_one(conflicting_transfer_tx.to_dict())
+
+
+
+def test_conflict_res_with_vclocks():
+    """
+    ..todo: explain the test
+
+    """
+    from bigchaindb.core import Bigchain
+    from bigchaindb.models import Transaction
+    from bigchaindb.common.crypto import generate_key_pair
+    alice, bob = generate_key_pair(), generate_key_pair()
+    carol = generate_key_pair()
+
+    b = Bigchain()
+    mdb1 = MongoClient('mdb-1')
+    mdb2 = MongoClient('mdb-2')
+
+    create_tx = Transaction.create(
+        [alice.public_key],
+        [([alice.public_key], 1)],
+        asset=dict(time=time()),
+    ).sign([alice.private_key])
+    print(create_tx.id)
+    mdb1.bigchain.backlog.insert_one(create_tx.to_dict())
+    #b.write_transaction(create_tx)
+
+    #assert not b.get_spent_from_backlog(create_tx.id, 0)
+
+    transfer_tx = Transaction.transfer(
+        create_tx.to_inputs(),
+        [([bob.public_key], 1)],
+        asset_id=create_tx.id,
+    ).sign([alice.private_key])
+    print(transfer_tx.id)
+    mdb1.bigchain.backlog.insert_one(transfer_tx.to_dict())
+    conflicting_transfer_tx = Transaction.transfer(
+        create_tx.to_inputs(),
+        [([carol.public_key], 1)],
+        asset_id=create_tx.id,
+    ).sign([alice.private_key])
+    print(conflicting_transfer_tx.id)
+    #b.write_transaction(transfer_tx)
+    #assert b.get_spent_from_backlog(create_tx.id, 0)
+    mdb2.bigchain.backlog.insert_one(conflicting_transfer_tx.to_dict())

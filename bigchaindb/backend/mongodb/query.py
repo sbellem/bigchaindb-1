@@ -85,9 +85,10 @@ def get_transaction_from_backlog(conn, transaction_id):
     return conn.run(
         conn.collection('backlog')
         .find_one({'id': transaction_id},
-                  projection={'_id': False,
-                              'assignee': False,
-                              'assignment_timestamp': False}))
+                  #projection={'_id': False,
+                  #            'assignee': False,
+                  #            'assignment_timestamp': False}
+                  ))
 
 
 @register_query(MongoDBConnection)
@@ -150,31 +151,46 @@ def get_asset_by_id(conn, asset_id):
     return (elem['block']['transactions'] for elem in cursor)
 
 
+#@register_query(MongoDBConnection)
+#def get_spent(conn, transaction_id, output):
+#    cursor = conn.run(
+#        conn.collection('bigchain').aggregate([
+#            {'$match': {
+#                'block.transactions.inputs': {
+#                    '$elemMatch': {
+#                        'fulfills.transaction_id': transaction_id,
+#                        'fulfills.output_index': output,
+#                    },
+#                },
+#            }},
+#            {'$unwind': '$block.transactions'},
+#            {'$match': {
+#                'block.transactions.inputs': {
+#                    '$elemMatch': {
+#                        'fulfills.transaction_id': transaction_id,
+#                        'fulfills.output_index': output,
+#                    },
+#                },
+#            }},
+#        ]))
+#    # we need to access some nested fields before returning so lets use a
+#    # generator to avoid having to read all records on the cursor at this point
+#    return (elem['block']['transactions'] for elem in cursor)
+
+
 @register_query(MongoDBConnection)
 def get_spent(conn, transaction_id, output):
-    cursor = conn.run(
-        conn.collection('bigchain').aggregate([
-            {'$match': {
-                'block.transactions.inputs': {
-                    '$elemMatch': {
-                        'fulfills.transaction_id': transaction_id,
-                        'fulfills.output_index': output,
-                    },
+    spent_tx = conn.run(
+        conn.collection('backlog').find_one({
+            'inputs': {
+                '$elemMatch': {
+                    'fulfills.transaction_id': transaction_id,
+                    'fulfills.output_index': output,
                 },
-            }},
-            {'$unwind': '$block.transactions'},
-            {'$match': {
-                'block.transactions.inputs': {
-                    '$elemMatch': {
-                        'fulfills.transaction_id': transaction_id,
-                        'fulfills.output_index': output,
-                    },
-                },
-            }},
-        ]))
-    # we need to access some nested fields before returning so lets use a
-    # generator to avoid having to read all records on the cursor at this point
-    return (elem['block']['transactions'] for elem in cursor)
+            },
+        })
+    )
+    return spent_tx
 
 
 @register_query(MongoDBConnection)

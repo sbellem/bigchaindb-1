@@ -34,50 +34,52 @@ class Transaction(Transaction):
             input_txs = []
             for input_ in self.inputs:
                 input_txid = input_.fulfills.txid
-                input_tx, status = bigchain.\
-                    get_transaction(input_txid, include_status=True)
+                #input_tx, status = bigchain.\
+                #    get_transaction(input_txid, include_status=True)
 
-                if input_tx is None:
-                    raise InputDoesNotExist("input `{}` doesn't exist"
-                                            .format(input_txid))
+                #if input_tx is None:
+                #    raise InputDoesNotExist("input `{}` doesn't exist"
+                #                            .format(input_txid))
 
-                if status != bigchain.TX_VALID:
-                    raise TransactionNotInValidBlock(
-                        'input `{}` does not exist in a valid block'.format(
-                            input_txid))
+                #if status != bigchain.TX_VALID:
+                #    raise TransactionNotInValidBlock(
+                #        'input `{}` does not exist in a valid block'.format(
+                #            input_txid))
 
-                spent = bigchain.get_spent(input_txid, input_.fulfills.output)
+                #spent = bigchain.get_spent(input_txid, input_.fulfills.output)
+                spent = bigchain.get_spent_from_backlog(input_txid,
+                                                        input_.fulfills.output)
                 if spent and spent.id != self.id:
                     raise DoubleSpend('input `{}` was already spent'
                                       .format(input_txid))
 
-                output = input_tx.outputs[input_.fulfills.output]
-                input_conditions.append(output)
-                input_txs.append(input_tx)
+                #output = input_tx.outputs[input_.fulfills.output]
+                #input_conditions.append(output)
+                #input_txs.append(input_tx)
 
-            # Validate that all inputs are distinct
-            links = [i.fulfills.to_uri() for i in self.inputs]
-            if len(links) != len(set(links)):
-                raise DoubleSpend('tx "{}" spends inputs twice'.format(self.id))
+            ## Validate that all inputs are distinct
+            #links = [i.fulfills.to_uri() for i in self.inputs]
+            #if len(links) != len(set(links)):
+            #    raise DoubleSpend('tx "{}" spends inputs twice'.format(self.id))
 
-            # validate asset id
-            asset_id = Transaction.get_asset_id(input_txs)
-            if asset_id != self.asset['id']:
-                raise AssetIdMismatch(('The asset id of the input does not'
-                                       ' match the asset id of the'
-                                       ' transaction'))
+            ## validate asset id
+            #asset_id = Transaction.get_asset_id(input_txs)
+            #if asset_id != self.asset['id']:
+            #    raise AssetIdMismatch(('The asset id of the input does not'
+            #                           ' match the asset id of the'
+            #                           ' transaction'))
 
-            input_amount = sum([input_condition.amount for input_condition in input_conditions])
-            output_amount = sum([output_condition.amount for output_condition in self.outputs])
+            #input_amount = sum([input_condition.amount for input_condition in input_conditions])
+            #output_amount = sum([output_condition.amount for output_condition in self.outputs])
 
-            if output_amount != input_amount:
-                raise AmountError(('The amount used in the inputs `{}`'
-                                   ' needs to be same as the amount used'
-                                   ' in the outputs `{}`')
-                                  .format(input_amount, output_amount))
+            #if output_amount != input_amount:
+            #    raise AmountError(('The amount used in the inputs `{}`'
+            #                       ' needs to be same as the amount used'
+            #                       ' in the outputs `{}`')
+            #                      .format(input_amount, output_amount))
 
-        if not self.inputs_valid(input_conditions):
-            raise InvalidSignature('Transaction signature is invalid.')
+        #if not self.inputs_valid(input_conditions):
+        #    raise InvalidSignature('Transaction signature is invalid.')
 
         return self
 

@@ -280,6 +280,11 @@ class Bigchain(object):
         else:
             return response
 
+    def get_transaction_from_backlog(self, txid):
+        return backend.query.get_transaction_from_backlog(
+            self.connection, txid
+        )
+
     def get_status(self, txid):
         """Retrieve the status of a transaction with `txid` from bigchain.
 
@@ -401,6 +406,36 @@ class Bigchain(object):
 
         # Either no transaction was returned spending the `(txid, output)` as
         # input or the returned transactions are not valid.
+
+    def get_spent_from_backlog(self, txid, output):
+        """Check if a `txid` was already used as an input.
+
+        A transaction can be used as an input for another transaction. Bigchain
+        needs to make sure that a given `(txid, output)` is only used once.
+
+        This method will check if the `(txid, output)` has already been
+        spent in a transaction that is in ...
+
+        Args:
+            txid (str): The id of the transaction
+            output (num): the index of the output in the respective transaction
+
+        Returns:
+            The transaction (Transaction) that used the `(txid, output)` as an
+            input else `None`
+
+        Raises:
+            CriticalDoubleSpend: If the given `(txid, output)` was spent in
+            more than one valid transaction.
+        """
+        transaction = backend.query.get_spent(self.connection, txid,
+                                                    output)
+        #if transaction:
+        #    raise core_exceptions.CriticalDoubleSpend(
+        #            '`{}` was spent more than once. There is a problem'
+        #            ' with the chain'.format(txid))
+        #
+        return transaction
 
     def get_owned_ids(self, owner):
         """Retrieve a list of ``txid`` s that can be used as inputs.
