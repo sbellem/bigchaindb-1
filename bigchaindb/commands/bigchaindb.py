@@ -172,8 +172,8 @@ def run_drop(args):
         print("Cannot drop '{name}'. The database does not exist.".format(name=dbname), file=sys.stderr)
 
 
-@configure_bigchaindb
-@start_logging_process
+#@configure_bigchaindb
+#@start_logging_process
 def run_start(args):
     """Start the processes to run the node"""
     logger.info('BigchainDB Version %s', bigchaindb.__version__)
@@ -207,6 +207,10 @@ def run_start(args):
     logger.info('Starting BigchainDB main process with public key %s',
                 bigchaindb.config['keypair']['public'])
     processes.start()
+    #from bigchaindb.abciserver import SimpleCounter
+    #from abci import ABCIServer
+    #app = ABCIServer(app=SimpleCounter())
+    #app.run()
 
 
 @configure_bigchaindb
