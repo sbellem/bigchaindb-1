@@ -6,7 +6,7 @@ services:
     ports:
       - "27017"
     command: mongod --replSet=bigchain-rs
-  abci:
+  bdb-abci:
     depends_on:
       - mdb
     build:
@@ -33,7 +33,10 @@ services:
     entrypoint: ''
     #command: ['tendermint', '--log_level', 'debug', 'node']
     command: bash -c "tendermint unsafe_reset_all && tendermint --log_level debug node"
-  client:
+  curl-client:
     image: appropriate/curl
-    command: curl http://tendermint:46657/abci_query
-
+    command: /bin/sh -c "curl http://tendermint:46657/abci_query && curl http://bdb-abci:9984/"
+  driver:
+    build:
+      context: .
+      dockerfile: ./compose/driver/Dockerfile

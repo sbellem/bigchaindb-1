@@ -2,10 +2,12 @@ import logging
 import multiprocessing as mp
 
 import bigchaindb
+from bigchaindb import Bigchain
 from bigchaindb import config_utils
-from bigchaindb.pipelines import vote, block, election, stale
-from bigchaindb.events import Exchange, EventTypes
-from bigchaindb.web import server, websocket_server
+#from bigchaindb.pipelines import vote, block, election, stale
+#from bigchaindb.events import Exchange, EventTypes
+#from bigchaindb.web import server, websocket_server
+from bigchaindb.web import server
 
 
 logger = logging.getLogger(__name__)
@@ -85,6 +87,6 @@ def start():
     #exchange.run()
     from bigchaindb.abciserver import SimpleCounter
     from abci import ABCIServer
-    app = ABCIServer(app=SimpleCounter())
+    app = ABCIServer(app=SimpleCounter(Bigchain()))
     logger.info('***** run ABCI *****')
     app.run()
