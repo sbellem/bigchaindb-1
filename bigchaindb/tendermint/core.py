@@ -45,5 +45,5 @@ class App(BaseApplication):
         if not transaction:
             return Result.error(log='Invalid transaction')
         else:
-            self.bigchaindb.write_transaction(transaction)
+            self.bigchaindb.store_transaction(transaction)
             return Result.ok()
