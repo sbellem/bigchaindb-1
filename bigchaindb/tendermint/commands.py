@@ -34,9 +34,11 @@ def start():
     p_webapi.start()
 
     # start message
-    print(BANNER.format(bigchaindb.config['server']['bind']))
+    logger.info(BANNER.format(bigchaindb.config['server']['bind']))
+    logger.debug('tendermint integration')
 
-    subprocess.Popen(['tendermint', 'node'])
+    # XXX sorry alberto! :)
+    #subprocess.Popen(['tendermint', 'node'])
 
     # We need to import this after spawning the web server
     # because import ABCIServer will monkeypatch all sockets

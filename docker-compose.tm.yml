@@ -5,7 +5,7 @@ services:
     image: mongo:3.4.3
     ports:
       - "27017"
-    command: mongod --replSet=bigchain-rs
+    command: mongod
   bdb-abci:
     depends_on:
       - mdb
@@ -13,25 +13,25 @@ services:
       context: .
       dockerfile: ./compose/abci/Dockerfile
       args:
-        backend: mongodb
+        backend: localmongodb
     volumes:
       - .:/usr/src/app/
     environment:
-      BIGCHAINDB_DATABASE_BACKEND: mongodb
+      BIGCHAINDB_DATABASE_BACKEND: localmongodb
       BIGCHAINDB_DATABASE_HOST: mdb
       BIGCHAINDB_DATABASE_PORT: 27017
       BIGCHAINDB_SERVER_BIND: 0.0.0.0:9984
       BIGCHAINDB_WSSERVER_HOST: 0.0.0.0
+      TENDERMINT_HOST: tendermint
+      TENDERMINT_PORT: 46657
     ports:
       - "9984"
-    #command: python lab/counter.py
-    command: bigchaindb start --init
+    command: bigchaindb -l DEBUG start
   tendermint:
     image: tendermint/tendermint
     volumes:
       - ./tmdata:/tendermint
     entrypoint: ''
-    #command: ['tendermint', '--log_level', 'debug', 'node']
     command: bash -c "tendermint unsafe_reset_all && tendermint --log_level debug node"
   curl-client:
     image: appropriate/curl

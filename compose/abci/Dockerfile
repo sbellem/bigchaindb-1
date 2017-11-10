@@ -8,6 +8,8 @@ RUN apt-get update \
     && apt-get autoremove \
     && apt-get clean
 
+ENV PYTHONUNBUFFERED=0
+
 ENV BIGCHAINDB_SERVER_BIND 0.0.0.0:9984
 ENV BIGCHAINDB_WSSERVER_HOST 0.0.0.0
 ENV BIGCHAINDB_WSSERVER_SCHEME ws
