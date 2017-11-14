@@ -87,3 +87,4 @@ terraform.tfstate.backup
 
 # tendermint data
 tmdata
+network/*/data
