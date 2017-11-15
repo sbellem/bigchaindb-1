@@ -1,6 +1,7 @@
 import logging
 import subprocess
 import multiprocessing as mp
+from os import getenv
 
 import bigchaindb
 from bigchaindb.tendermint.lib import BigchainDB
@@ -36,7 +37,8 @@ def start():
     # start message
     logger.info(BANNER.format(bigchaindb.config['server']['bind']))
 
-    subprocess.Popen(['tendermint', 'node'])
+    if int(getenv('BIGCHAINDB_START_TENDERMINT', 1)):
+        subprocess.Popen(['tendermint', 'node'])
 
     # We need to import this after spawning the web server
     # because import ABCIServer will monkeypatch all sockets
