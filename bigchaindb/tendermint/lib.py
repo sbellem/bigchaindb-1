@@ -59,6 +59,27 @@ class BigchainDB(Bigchain):
 
         return backend.query.store_transaction(self.connection, transaction)
 
+    def extract_spent_outputs(self, transaction):
+        raise NotImplementedError
+
+    def build_utxo_records(self, transaction):
+        raise NotImplementedError
+
+    def update_utxos(self, transaction):
+        raise NotImplementedError
+        spent_outputs = extract_spent_outputs(transaction)
+        self.delete_utxos(utxos)
+        utxos = build_utxo_records(transaction)
+        self.store_utxos(utxos)
+
+    def store_utxos(self, utxos):
+        raise NotImplementedError
+        backend.query.store_utxos(self.connection, utxos)
+
+    def delete_utxos(self, utxos):
+        raise NotImplementedError
+        backend.query.delete_utxos(self.connection, utxos)
+
     def get_transaction(self, transaction_id, include_status=False):
         transaction = backend.query.get_transaction(self.connection, transaction_id)
         asset = backend.query.get_asset(self.connection, transaction_id)
