@@ -60,7 +60,11 @@ class BigchainDB(Bigchain):
         return backend.query.store_transaction(self.connection, transaction)
 
     def extract_spent_outputs(self, transaction):
-        raise NotImplementedError
+        stxos = [
+            STXO(input_.fulfills.txid, input_.fulfills.output)
+            for input_ in transaction.inputs
+        ]
+        return stxos
 
     def build_utxo_records(self, transaction):
         raise NotImplementedError
@@ -68,7 +72,7 @@ class BigchainDB(Bigchain):
     def update_utxos(self, transaction):
         raise NotImplementedError
         spent_outputs = extract_spent_outputs(transaction)
-        self.delete_utxos(utxos)
+        self.delete_utxos(spent_outputs)
         utxos = build_utxo_records(transaction)
         self.store_utxos(utxos)
 
@@ -159,3 +163,4 @@ class BigchainDB(Bigchain):
 
 
 Block = namedtuple('Block', ('app_hash', 'height'))
+STXO = namedtuple('STXO', ('transaction_id', 'output_index'))

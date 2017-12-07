@@ -83,3 +83,13 @@ def test_write_and_post_transaction(mock_post, b):
     assert 'broadcast_tx_async' == kwargs['json']['method']
     encoded_tx = [encode_transaction(tx.to_dict())]
     assert encoded_tx == kwargs['json']['params']
+
+
+def test_extract_spent_outputs(tb, signed_transfer_tx):
+    spent_outputs = tb.extract_spent_outputs(signed_transfer_tx)
+    tx = signed_transfer_tx.to_dict()
+    assert len(spent_outputs) == 1
+    spent_output = spent_outputs[0]
+    assert spent_output.transaction_id == tx['inputs'][0]['fulfills']['transaction_id']
+    assert spent_output.output_index == tx['inputs'][0]['fulfills']['output_index']
+    assert spent_output._asdict() == tx['inputs'][0]['fulfills']
