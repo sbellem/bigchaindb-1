@@ -498,3 +498,17 @@ def store_block(conn, block):
     """
 
     raise NotImplementedError
+
+
+@singledispatch
+def store_unspent_outputs(connection, unspent_outputs):
+    """Store unspent outputs in ``utxo_set`` table."""
+
+    raise NotImplementedError
+
+
+@singledispatch
+def delete_unspent_outputs(connection, unspent_outputs):
+    """Delete unspent outputs in ``utxo_set`` table."""
+
+    raise NotImplementedError

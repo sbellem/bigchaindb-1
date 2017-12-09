@@ -153,3 +153,24 @@ def get_spending_transactions(conn, inputs):
             {'$project': {'_id': False}}
         ]))
     return cursor
+
+
+@register_query(LocalMongoDBConnection)
+def store_unspent_outputs(conn, unspent_outputs):
+
+    raise NotImplementedError
+
+
+@register_query(LocalMongoDBConnection)
+def delete_unspent_outputs(conn, *unspent_outputs):
+    cursor = conn.run(
+            conn.collection('utxos').remove(
+                {'$or': [
+                    {'$and': [
+                        {'transaction_id': unspent_output['transaction_id']},
+                        {'output_index': unspent_output['output_index']}
+                    ]}
+                    for unspent_output in unspent_outputs
+                ]}
+                ))
+    return cursor

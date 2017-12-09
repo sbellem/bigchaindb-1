@@ -2,6 +2,7 @@ from copy import deepcopy
 
 import pytest
 import pymongo
+from pymongo import MongoClient
 
 pytestmark = [pytest.mark.tendermint, pytest.mark.localmongodb, pytest.mark.bdb]
 
@@ -152,3 +153,27 @@ def test_get_spending_transactions(user_pk, user_sk):
 
     # tx3 not a member because input 1 not asked for
     assert txns == [tx2.to_dict(), tx4.to_dict()]
+
+
+def test_delete_unspent_outputs(db_host, db_port, db_name, db_conn):
+    from bigchaindb.backend import query
+    unspent_outputs = [
+        {'transaction_id': 'a', 'output_index': 0},
+        {'transaction_id': 'a', 'output_index': 1},
+        {'transaction_id': 'b', 'output_index': 0},
+    ]
+    mongo_client = MongoClient(host=db_host, port=db_port)
+    utxo_collection = mongo_client[db_name].utxos
+    insert_res = utxo_collection.insert_many(unspent_outputs)
+    assert insert_res.acknowledged
+    assert len(insert_res.inserted_ids) == 3
+    delete_res = query.delete_unspent_outputs(db_conn, *unspent_outputs[::2])
+    assert delete_res['n'] == 2
+    assert utxo_collection.find(
+        {'$or': [
+            {'transaction_id': 'a', 'output_index': 0},
+            {'transaction_id': 'b', 'output_index': 0},
+        ]}
+    ).count() == 0
+    assert utxo_collection.find(
+            {'transaction_id': 'a', 'output_index': 1}).count() == 1

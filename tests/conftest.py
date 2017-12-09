@@ -467,12 +467,14 @@ def db_config():
 
 @pytest.fixture
 def db_host(db_config):
-    return db_config['host']
+    #return db_config['host']
+    return os.environ['BIGCHAINDB_DATABASE_HOST']
 
 
 @pytest.fixture
 def db_port(db_config):
-    return db_config['port']
+    #return db_config['port']
+    return int(os.environ['BIGCHAINDB_DATABASE_PORT'])
 
 
 @pytest.fixture
