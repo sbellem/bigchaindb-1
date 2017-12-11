@@ -44,7 +44,7 @@ class BigchainDB(Bigchain):
     def store_transaction(self, transaction):
         """Store a valid transaction to the transactions collection."""
 
-        self.update_utxos(transaction)
+        self.update_utxoset(transaction)
         transaction = deepcopy(transaction.to_dict())
         if transaction['operation'] == 'CREATE':
             asset = transaction.pop('asset')
@@ -61,20 +61,17 @@ class BigchainDB(Bigchain):
         return backend.query.store_transaction(self.connection, transaction)
 
     def extract_spent_outputs(self, transaction):
+        # TODO push to Transaction model
         stxos = [
             STXO(input_.fulfills.txid, input_.fulfills.output)
             for input_ in transaction.inputs
         ]
         return stxos
 
-    def build_utxo_records(self, transaction):
-        raise NotImplementedError
-
-    def update_utxos(self, transaction):
+    def update_utxoset(self, transaction):
         spent_outputs = extract_spent_outputs(transaction)
         self.delete_unspent_outputs(spent_outputs)
-        utxos = build_utxo_records(transaction)
-        self.store_utxos(utxos)
+        self.store_utxos(transaction.unspent_outputs)
 
     def store_utxos(self, utxos):
         backend.query.store_utxos(self.connection, utxos)
