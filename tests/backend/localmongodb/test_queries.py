@@ -155,19 +155,20 @@ def test_get_spending_transactions(user_pk, user_sk):
     assert txns == [tx2.to_dict(), tx4.to_dict()]
 
 
-def test_delete_unspent_outputs(db_host, db_port, db_name, db_conn):
+def test_delete_unspent_outputs(db_context):
     from bigchaindb.backend import query
     unspent_outputs = [
         {'transaction_id': 'a', 'output_index': 0},
         {'transaction_id': 'a', 'output_index': 1},
         {'transaction_id': 'b', 'output_index': 0},
     ]
-    mongo_client = MongoClient(host=db_host, port=db_port)
-    utxo_collection = mongo_client[db_name].utxos
+    mongo_client = MongoClient(host=db_context.host, port=db_context.port)
+    utxo_collection = mongo_client[db_context.name].utxos
     insert_res = utxo_collection.insert_many(unspent_outputs)
     assert insert_res.acknowledged
     assert len(insert_res.inserted_ids) == 3
-    delete_res = query.delete_unspent_outputs(db_conn, *unspent_outputs[::2])
+    delete_res = query.delete_unspent_outputs(db_context.conn,
+                                              *unspent_outputs[::2])
     assert delete_res['n'] == 2
     assert utxo_collection.find(
         {'$or': [
@@ -177,3 +178,28 @@ def test_delete_unspent_outputs(db_host, db_port, db_name, db_conn):
     ).count() == 0
     assert utxo_collection.find(
             {'transaction_id': 'a', 'output_index': 1}).count() == 1
+
+
+def test_store_one_unspent_output(db_context, unspent_output_1):
+    from bigchaindb.backend import query
+    mongo_client = MongoClient(host=db_context.host, port=db_context.port)
+    utxo_collection = mongo_client[db_context.name].utxos
+    res = query.store_unspent_outputs(db_context.conn, unspent_output_1)
+    assert res.acknowledged
+    assert len(res.inserted_ids) == 1
+    assert utxo_collection.find(
+        {'transaction_id': unspent_output_1['transaction_id'],
+         'output_index': unspent_output_1['output_index']}
+    ).count() == 1
+
+
+def test_store_many_unspent_outputs(db_context, unspent_outputs):
+    from bigchaindb.backend import query
+    mongo_client = MongoClient(host=db_context.host, port=db_context.port)
+    utxo_collection = mongo_client[db_context.name].utxos
+    res = query.store_unspent_outputs(db_context.conn, *unspent_outputs)
+    assert res.acknowledged
+    assert len(res.inserted_ids) == 3
+    assert utxo_collection.find(
+        {'transaction_id': unspent_outputs[0]['transaction_id']}
+    ).count() == 3

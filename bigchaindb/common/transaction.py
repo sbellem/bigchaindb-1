@@ -34,7 +34,8 @@ UnspentOutput = namedtuple(
 
 
 # TODO docstring
-def utxo_record(*, output_index, transaction_id, output, asset_id):
+def utxo_record(*, output_index, transaction_id,
+                output, asset_id, fulfillment_message):
     return UnspentOutput(
         transaction_id=transaction_id,
         output_index=output_index,
@@ -563,7 +564,7 @@ class Transaction(object):
         if self.operation == Transaction.CREATE:
             self._asset_id = self._id
         elif self.operation == Transaction.TRANSFER:
-            self._asset_id = asset['id']
+            self._asset_id = self.asset['id']
         return (UnspentOutput(
             transaction_id=self._id,
             output_index=output_index,

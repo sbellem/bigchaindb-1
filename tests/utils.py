@@ -45,6 +45,7 @@ def flush_mongo_db(connection, dbname):
     connection.conn[dbname].votes.delete_many({})
     connection.conn[dbname].assets.delete_many({})
     connection.conn[dbname].metadata.delete_many({})
+    connection.conn[dbname].utxos.delete_many({})
 
 
 @singledispatch

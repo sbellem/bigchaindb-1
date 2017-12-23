@@ -156,9 +156,14 @@ def get_spending_transactions(conn, inputs):
 
 
 @register_query(LocalMongoDBConnection)
-def store_unspent_outputs(conn, unspent_outputs):
-
-    raise NotImplementedError
+def store_unspent_outputs(conn, *unspent_outputs):
+    try:
+        return conn.run(
+            conn.collection('utxos')
+            .insert_many(unspent_outputs, ordered=False))
+    except DuplicateKeyError:
+        # TODO log warning at least
+        pass
 
 
 @register_query(LocalMongoDBConnection)
