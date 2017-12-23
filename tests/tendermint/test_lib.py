@@ -93,3 +93,7 @@ def test_extract_spent_outputs(tb, signed_transfer_tx):
     assert spent_output.transaction_id == tx['inputs'][0]['fulfills']['transaction_id']
     assert spent_output.output_index == tx['inputs'][0]['fulfills']['output_index']
     assert spent_output._asdict() == tx['inputs'][0]['fulfills']
+
+
+def test_update_utxoset():
+    raise NotImplementedError

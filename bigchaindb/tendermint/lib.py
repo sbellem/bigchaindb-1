@@ -44,6 +44,7 @@ class BigchainDB(Bigchain):
     def store_transaction(self, transaction):
         """Store a valid transaction to the transactions collection."""
 
+        # TODO turn on
         # self.update_utxoset(transaction)
         transaction = deepcopy(transaction.to_dict())
         if transaction['operation'] == 'CREATE':
@@ -61,7 +62,7 @@ class BigchainDB(Bigchain):
         return backend.query.store_transaction(self.connection, transaction)
 
     def extract_spent_outputs(self, transaction):
-        # TODO push to Transaction model
+        # TODO push to Transaction model -- just use tx link
         stxos = [
             STXO(input_.fulfills.txid, input_.fulfills.output)
             for input_ in transaction.inputs
