@@ -1,6 +1,11 @@
-# How to Contribute to the BigchainDB Project
+###########################################
+How to Contribute to the BigchainDB Project
+###########################################
 
-There are many ways you can contribute to the BigchainDB project, some very easy and others more involved. We want to be friendly and welcoming to all potential contributors, so we ask that everyone involved abide by some simple guidelines outlined in our [Code of Conduct](./CODE_OF_CONDUCT.md).
+There are many ways you can contribute to the BigchainDB project, some very
+easy and others more involved. We want to be friendly and welcoming to all
+potential contributors, so we ask that everyone involved abide by some simple
+guidelines outlined in our [Code of Conduct](./CODE_OF_CONDUCT.md).
 
 ## Easy Ways to Contribute
 
