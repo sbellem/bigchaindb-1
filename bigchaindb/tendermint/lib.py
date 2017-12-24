@@ -70,14 +70,17 @@ class BigchainDB(Bigchain):
         return stxos
 
     def update_utxoset(self, transaction):
+        """ .. todo: docs """
         spent_outputs = self.extract_spent_outputs(transaction)
         self.delete_unspent_outputs(spent_outputs)
         self.store_utxos(transaction.unspent_outputs)
 
     def store_utxos(self, utxos):
+        """ .. todo: docs """
         backend.query.store_utxos(self.connection, utxos)
 
     def delete_unspent_outputs(self, unspent_outputs):
+        """ .. todo: docs """
         backend.query.delete_unspent_outputs(self.connection, unspent_outputs)
 
     def get_transaction(self, transaction_id, include_status=False):
