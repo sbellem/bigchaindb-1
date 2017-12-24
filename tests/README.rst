@@ -1,4 +1,6 @@
-# BigchainDB Server Tests
+#######################
+BigchainDB Server Tests
+#######################
 
 ## The tests/ Folder
 
@@ -119,7 +121,7 @@ to rebuild all the images (usually you only need to rebuild the `bdb` and
 
 ## Automated Testing of All Pull Requests
 
-We use [Travis CI](https://travis-ci.com/), so that whenever someone creates a new BigchainDB pull request on GitHub, Travis CI gets the new code and does _a bunch of stuff_. You can find out what we tell Travis CI to do in [the `.travis.yml` file](.travis.yml): it tells Travis CI how to install BigchainDB, how to run all the tests, and what to do "after success" (e.g. run `codecov`). (We use [Codecov](https://codecov.io/) to get a rough estimate of our test coverage.)
+We use [Travis CI](https://travis-ci.com/), so that whenever someone creates a new BigchainDB pull request on GitHub, Travis CI gets the new code and does *a bunch of stuff*. You can find out what we tell Travis CI to do in [the `.travis.yml` file](.travis.yml): it tells Travis CI how to install BigchainDB, how to run all the tests, and what to do "after success" (e.g. run `codecov`). (We use [Codecov](https://codecov.io/) to get a rough estimate of our test coverage.)
 
 
 ### Tox

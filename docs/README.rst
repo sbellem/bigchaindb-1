@@ -1,7 +1,9 @@
 - [Documentation on ReadTheDocs](http://bigchaindb.readthedocs.org/)
 - [BigchainDB Upgrade Guides](upgrade-guides/)
 
-# The BigchainDB Documentation Strategy
+#####################################
+The BigchainDB Documentation Strategy
+#####################################
 
 * Include explanatory comments and docstrings in your code. Write [Google style docstrings](https://google.github.io/styleguide/pyguide.html?showone=Comments#Comments) with a maximum line width of 119 characters.
 * For quick overview and help documents, feel free to create `README.md` or other `X.md` files, written using [GitHub-flavored Markdown](https://help.github.com/categories/writing-on-github/). Markdown files render nicely on GitHub. We might auto-convert some .md files into a format that can be included in the long-form documentation.
@@ -16,7 +18,7 @@ If you want to generate the HTML version of the long-form documentation on your 
 pip install -r requirements.txt
 ```
 
-You can then generate the HTML documentation _in that subdirectory_ by doing:
+You can then generate the HTML documentation *in that subdirectory* by doing:
 ```bash
 make html
 ```
