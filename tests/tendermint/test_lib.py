@@ -85,15 +85,18 @@ def test_write_and_post_transaction(mock_post, b):
     assert encoded_tx == kwargs['json']['params']
 
 
-def test_extract_spent_outputs(tb, signed_transfer_tx):
-    spent_outputs = tb.extract_spent_outputs(signed_transfer_tx)
-    tx = signed_transfer_tx.to_dict()
-    assert len(spent_outputs) == 1
-    spent_output = spent_outputs[0]
-    assert spent_output.transaction_id == tx['inputs'][0]['fulfills']['transaction_id']
-    assert spent_output.output_index == tx['inputs'][0]['fulfills']['output_index']
-    assert spent_output._asdict() == tx['inputs'][0]['fulfills']
-
-
-def test_update_utxoset():
-    raise NotImplementedError
+@pytest.mark.bdb
+def test_update_utxoset(tb, signed_create_tx, signed_transfer_tx, db_context):
+    from pymongo import MongoClient
+    mongo_client = MongoClient(host=db_context.host, port=db_context.port)
+    tb.update_utxoset(signed_create_tx)
+    utxoset = mongo_client[db_context.name]['utxos']
+    assert utxoset.count() == 1
+    utxo = utxoset.find_one()
+    assert utxo['transaction_id'] == signed_create_tx.id
+    assert utxo['output_index'] == 0
+    tb.update_utxoset(signed_transfer_tx)
+    assert utxoset.count() == 1
+    utxo = utxoset.find_one()
+    assert utxo['transaction_id'] == signed_transfer_tx.id
+    assert utxo['output_index'] == 0

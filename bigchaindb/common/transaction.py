@@ -561,6 +561,7 @@ class Transaction(object):
 
     @property
     def unspent_outputs(self):
+        """ .. todo: docs """
         if self.operation == Transaction.CREATE:
             self._asset_id = self._id
         elif self.operation == Transaction.TRANSFER:
@@ -574,6 +575,14 @@ class Transaction(object):
             # TODO update once #1937 is available
             fulfillment_message=self.serialized,
         ) for output_index, output in enumerate(self.outputs))
+
+    @property
+    def spent_outputs(self):
+        """ .. todo: docs """
+        return (
+            input_.fulfills.to_dict()
+            for input_ in self.inputs if input_.fulfills
+        )
 
     @property
     def serialized(self):

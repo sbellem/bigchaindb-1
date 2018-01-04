@@ -1040,3 +1040,13 @@ def test_unspent_outputs_property(merlin, alice, bob, carol):
     assert unspent_output_2.condition_uri == Ed25519Sha256(
         public_key=b58decode(carol.public_key)).condition_uri
     assert unspent_output_2.fulfillment_message == tx.serialized
+
+
+def test_spent_outputs_property(signed_transfer_tx):
+    spent_outputs = list(signed_transfer_tx.spent_outputs)
+    tx = signed_transfer_tx.to_dict()
+    assert len(spent_outputs) == 1
+    spent_output = spent_outputs[0]
+    assert spent_output['transaction_id'] == tx['inputs'][0]['fulfills']['transaction_id']
+    assert spent_output['output_index'] == tx['inputs'][0]['fulfills']['output_index']
+    # assert spent_output._asdict() == tx['inputs'][0]['fulfills']
