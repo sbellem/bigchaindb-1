@@ -65,14 +65,6 @@ class BigchainDB(Bigchain):
 
         return backend.query.store_transaction(self.connection, transaction)
 
-    def extract_spent_outputs(self, transaction):
-        # TODO push to Transaction model -- just use tx link
-        stxos = [
-            input_.fulfills.to_ict()
-            for input_ in transaction.inputs if input_.fulfills
-        ]
-        return stxos
-
     def update_utxoset(self, transaction):
         """ .. todo: docs """
         spent_outputs = [
