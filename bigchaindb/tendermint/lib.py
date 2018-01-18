@@ -49,7 +49,7 @@ class BigchainDB(Bigchain):
         """Store a valid transaction to the transactions collection."""
 
         # TODO turn on
-        # self.update_utxoset(transaction)
+        self.update_utxoset(transaction)
         transaction = deepcopy(transaction.to_dict())
         if transaction['operation'] == 'CREATE':
             asset = transaction.pop('asset')

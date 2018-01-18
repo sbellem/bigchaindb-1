@@ -2,6 +2,7 @@ import os
 from unittest.mock import patch
 
 import pytest
+from pymongo import MongoClient
 
 from bigchaindb import backend
 
@@ -9,6 +10,7 @@ from bigchaindb import backend
 pytestmark = pytest.mark.tendermint
 
 
+@pytest.mark.bdb
 def test_asset_is_separated_from_transaciton(b):
     from bigchaindb.models import Transaction
     from bigchaindb.common.crypto import generate_key_pair
@@ -87,7 +89,6 @@ def test_write_and_post_transaction(mock_post, b):
 
 @pytest.mark.bdb
 def test_update_utxoset(tb, signed_create_tx, signed_transfer_tx, db_context):
-    from pymongo import MongoClient
     mongo_client = MongoClient(host=db_context.host, port=db_context.port)
     tb.update_utxoset(signed_create_tx)
     utxoset = mongo_client[db_context.name]['utxos']
@@ -96,6 +97,32 @@ def test_update_utxoset(tb, signed_create_tx, signed_transfer_tx, db_context):
     assert utxo['transaction_id'] == signed_create_tx.id
     assert utxo['output_index'] == 0
     tb.update_utxoset(signed_transfer_tx)
+    assert utxoset.count() == 1
+    utxo = utxoset.find_one()
+    assert utxo['transaction_id'] == signed_transfer_tx.id
+    assert utxo['output_index'] == 0
+
+
+@pytest.mark.bdb
+#@patch('bigchaindb.backend.query.store_asset')
+#@patch('bigchaindb.backend.query.store_metadata')
+#@patch('bigchaindb.backend.query.store_transaction')
+#def test_store_transaction(mock_store_asset, mock_store_metadata, mock_tb, signed_create_tx, signed_transfer_tx, db_context):
+def test_store_transaction(mocker, tb, signed_create_tx, signed_transfer_tx, db_context):
+    mocked_store_asset = mocker.patch('bigchaindb.backend.query.store_asset')
+    mocked_store_metadata = mocker.patch('bigchaindb.backend.query.store_metadata')
+    mocked_store_transaction = mocker.patch('bigchaindb.backend.query.store_transaction')
+    mongo_client = MongoClient(host=db_context.host, port=db_context.port)
+    tb.store_transaction(signed_create_tx)
+    utxoset = mongo_client[db_context.name]['utxos']
+    assert utxoset.count() == 1
+    utxo = utxoset.find_one()
+    assert utxo['transaction_id'] == signed_create_tx.id
+    assert utxo['output_index'] == 0
+    assert mocked_store_asset.called
+    assert mocked_store_metadata.called
+    assert mocked_store_transaction.called
+    tb.store_transaction(signed_transfer_tx)
     assert utxoset.count() == 1
     utxo = utxoset.find_one()
     assert utxo['transaction_id'] == signed_transfer_tx.id
