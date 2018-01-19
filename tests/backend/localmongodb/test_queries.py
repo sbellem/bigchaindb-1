@@ -7,6 +7,25 @@ from pymongo import MongoClient
 pytestmark = [pytest.mark.tendermint, pytest.mark.localmongodb, pytest.mark.bdb]
 
 
+@pytest.fixture
+def dummy_unspent_outputs():
+    return [
+        {'transaction_id': 'a', 'output_index': 0},
+        {'transaction_id': 'a', 'output_index': 1},
+        {'transaction_id': 'b', 'output_index': 0},
+    ]
+
+
+@pytest.fixture
+def utxoset(dummy_unspent_outputs, db_context):
+    mongo_client = MongoClient(host=db_context.host, port=db_context.port)
+    utxo_collection = mongo_client[db_context.name].utxos
+    insert_res = utxo_collection.insert_many(deepcopy(dummy_unspent_outputs))
+    assert insert_res.acknowledged
+    assert len(insert_res.inserted_ids) == 3
+    return dummy_unspent_outputs, utxo_collection
+
+
 def test_get_txids_filtered(signed_create_tx, signed_transfer_tx):
     from bigchaindb.backend import connect, query
     from bigchaindb.models import Transaction
@@ -155,18 +174,9 @@ def test_get_spending_transactions(user_pk, user_sk):
     assert txns == [tx2.to_dict(), tx4.to_dict()]
 
 
-def test_delete_unspent_outputs(db_context):
+def test_delete_unspent_outputs(db_context, utxoset):
     from bigchaindb.backend import query
-    unspent_outputs = [
-        {'transaction_id': 'a', 'output_index': 0},
-        {'transaction_id': 'a', 'output_index': 1},
-        {'transaction_id': 'b', 'output_index': 0},
-    ]
-    mongo_client = MongoClient(host=db_context.host, port=db_context.port)
-    utxo_collection = mongo_client[db_context.name].utxos
-    insert_res = utxo_collection.insert_many(unspent_outputs)
-    assert insert_res.acknowledged
-    assert len(insert_res.inserted_ids) == 3
+    unspent_outputs, utxo_collection = utxoset
     delete_res = query.delete_unspent_outputs(db_context.conn,
                                               *unspent_outputs[::2])
     assert delete_res['n'] == 2
@@ -203,3 +213,15 @@ def test_store_many_unspent_outputs(db_context, unspent_outputs):
     assert utxo_collection.find(
         {'transaction_id': unspent_outputs[0]['transaction_id']}
     ).count() == 3
+
+
+def test_get_unspent_outputs(db_context, utxoset):
+    from bigchaindb.backend import query
+    cursor = query.get_unspent_outputs(db_context.conn)
+    assert cursor.count() == 3
+    retrieved_utxoset = list(cursor)
+    unspent_outputs, utxo_collection = utxoset
+    assert retrieved_utxoset == list(utxo_collection.find())
+    for utxo in retrieved_utxoset:
+        del utxo['_id']
+    assert retrieved_utxoset == unspent_outputs

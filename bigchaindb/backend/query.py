@@ -512,3 +512,20 @@ def delete_unspent_outputs(connection, unspent_outputs):
     """Delete unspent outputs in ``utxo_set`` table."""
 
     raise NotImplementedError
+
+
+@singledispatch
+def get_unspent_outputs(connection, *, query=None):
+    """Retrieves unspent outputs.
+
+    Args:
+        query (dict): An optional parameter to filter the result set.
+            Defaults to ``None``, which means that all UTXO records
+            will be returned.
+
+    Returns:
+        Generator yielding unspent outputs (UTXO set) according to the
+        given query.
+    """
+
+    raise NotImplementedError

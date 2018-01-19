@@ -179,3 +179,10 @@ def delete_unspent_outputs(conn, *unspent_outputs):
                 ]}
                 ))
     return cursor
+
+
+@register_query(LocalMongoDBConnection)
+def get_unspent_outputs(conn, *, query=None):
+    if query is None:
+        query = {}
+    return conn.run(conn.collection('utxos').find(query))
