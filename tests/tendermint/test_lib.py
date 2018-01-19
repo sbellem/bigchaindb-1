@@ -104,10 +104,6 @@ def test_update_utxoset(tb, signed_create_tx, signed_transfer_tx, db_context):
 
 
 @pytest.mark.bdb
-#@patch('bigchaindb.backend.query.store_asset')
-#@patch('bigchaindb.backend.query.store_metadata')
-#@patch('bigchaindb.backend.query.store_transaction')
-#def test_store_transaction(mock_store_asset, mock_store_metadata, mock_tb, signed_create_tx, signed_transfer_tx, db_context):
 def test_store_transaction(mocker, tb, signed_create_tx, signed_transfer_tx, db_context):
     mocked_store_asset = mocker.patch('bigchaindb.backend.query.store_asset')
     mocked_store_metadata = mocker.patch('bigchaindb.backend.query.store_metadata')
