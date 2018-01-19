@@ -163,4 +163,3 @@ class BigchainDB(Bigchain):
 
 
 Block = namedtuple('Block', ('app_hash', 'height'))
-STXO = namedtuple('STXO', ('transaction_id', 'output_index'))
