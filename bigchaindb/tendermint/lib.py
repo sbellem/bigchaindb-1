@@ -76,6 +76,29 @@ class BigchainDB(Bigchain):
             *[utxo._asdict() for utxo in transaction.unspent_outputs]
         )
 
+    def get_utxoset_merkle_root(self):
+        """Returns the merkle root of the utxoset. This implies that
+        the utxoset is first put into a merkle tree.
+
+        For now, the merkle tree and its root will be computed each
+        time. This obviously is not efficient and a better approach
+        that limits the repetition of the same computation when
+        unnecesary should be sought. For instance, future optimizations
+        could simply re-compute the branches of the tree that were
+        affected by a change.
+
+        The transaction hash (id) and output index should be sufficient
+        to uniquely identify a utxo, and consequently only that
+        information from a utxo record is needed to compute the merkle
+        root. Hence, each node of the merkle tree should contain the
+        tuple (txid, output_index).
+
+        .. important: The leaves of the tree will need to be sorted in
+        some kind of lexicographical order.
+
+        """
+        raise NotImplementedError
+
     def store_unspent_outputs(self, utxos):
         """ .. todo: docs """
         backend.query.store_unspent_outputs(self.connection, utxos)

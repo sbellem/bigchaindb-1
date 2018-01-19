@@ -149,3 +149,8 @@ def test_store_transaction(mocker, tb, signed_create_tx,
         {k: v for k, v in signed_transfer_tx.to_dict().items()
          if k != 'metadata'},
     )
+
+
+@pytest.mark.bdb
+def test_get_utxoset_merkle_root(tb):
+    tb.get_utxoset_merkle_root()
