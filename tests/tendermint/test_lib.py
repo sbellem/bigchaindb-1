@@ -1,6 +1,11 @@
 import os
 from unittest.mock import patch
 
+try:
+    from hashlib import sha3_256
+except:
+    from sha3 import sha3_256
+
 import pytest
 from pymongo import MongoClient
 
@@ -152,5 +157,11 @@ def test_store_transaction(mocker, tb, signed_create_tx,
 
 
 @pytest.mark.bdb
+def test_get_utxoset_merkle_root_when_no_utxo(tb):
+    assert tb.get_utxoset_merkle_root() == sha3_256(b'').hexdigest()
+
+
+# TODO test with UTXO SET containing something!
+@pytest.mark.bdb
 def test_get_utxoset_merkle_root(tb):
-    tb.get_utxoset_merkle_root()
+    raise NotImplementedError

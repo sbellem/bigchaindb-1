@@ -14,7 +14,7 @@ from bigchaindb import backend
 from bigchaindb import Bigchain
 from bigchaindb.models import Transaction
 from bigchaindb.common.exceptions import SchemaValidationError, ValidationError
-from bigchaindb.tendermint.utils import encode_transaction
+from bigchaindb.tendermint.utils import encode_transaction, merkleroot
 from bigchaindb.tendermint import fastquery
 
 
@@ -97,7 +97,16 @@ class BigchainDB(Bigchain):
         some kind of lexicographical order.
 
         """
-        raise NotImplementedError
+        utxoset = backend.query.get_unspent_outputs(self.connection)
+        # TODO Once ready, use the already pre-computed utxo_hash field.
+        # See common/transactions.py for details.
+        hashes = [
+            sha3_256(
+                f'''{utxo['transaction_id']}{utxo['output_index']}'''.encode()
+            ).digest() for utxo in utxoset
+        ]
+        # TODO Notice the sorted call!
+        return merkleroot(sorted(hashes))
 
     def store_unspent_outputs(self, utxos):
         """ .. todo: docs """
