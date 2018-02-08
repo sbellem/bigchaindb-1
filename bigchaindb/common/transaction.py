@@ -2,6 +2,7 @@
 payloads.
 
 """
+from collections import namedtuple
 from copy import deepcopy
 from functools import reduce
 
@@ -17,6 +18,32 @@ from bigchaindb.common.exceptions import (KeypairMismatchException,
                                           AmountError, AssetIdMismatch,
                                           ThresholdTooDeep)
 from bigchaindb.common.utils import serialize
+
+
+# TODO docstring
+UnspentOutput = namedtuple(
+    'UnspentOutput', (
+        'transaction_id',
+        'output_index',
+        'amount',
+        'asset_id',
+        'condition_uri',
+        'fulfillment_message',
+    )
+)
+
+
+# TODO docstring
+def utxo_record(*, output_index, transaction_id,
+                output, asset_id, fulfillment_message):
+    return UnspentOutput(
+        transaction_id=transaction_id,
+        output_index=output_index,
+        amout=output['amount'],
+        asset_id=asset_id,
+        condition_uri=output['uri'],
+        fulfillment_message=fulfillment_message,
+    )
 
 
 class Input(object):
@@ -531,6 +558,31 @@ class Transaction(object):
         self.outputs = outputs or []
         self.metadata = metadata
         self._id = hash_id
+
+    @property
+    def unspent_outputs(self):
+        """ .. todo: docs """
+        if self.operation == Transaction.CREATE:
+            self._asset_id = self._id
+        elif self.operation == Transaction.TRANSFER:
+            self._asset_id = self.asset['id']
+        return (UnspentOutput(
+            transaction_id=self._id,
+            output_index=output_index,
+            amount=output.amount,
+            asset_id=self._asset_id,
+            condition_uri=output.fulfillment.condition_uri,
+            # TODO update once #1937 is available
+            fulfillment_message=self.serialized,
+        ) for output_index, output in enumerate(self.outputs))
+
+    @property
+    def spent_outputs(self):
+        """ .. todo: docs """
+        return (
+            input_.fulfills.to_dict()
+            for input_ in self.inputs if input_.fulfills
+        )
 
     @property
     def serialized(self):
