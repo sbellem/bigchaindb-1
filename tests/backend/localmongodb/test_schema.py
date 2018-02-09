@@ -1,7 +1,7 @@
 import pytest
 
 
-pytestmark = pytest.mark.bdb
+pytestmark = [pytest.mark.bdb, pytest.mark.tendermint]
 
 
 def test_init_creates_db_tables_and_indexes():
