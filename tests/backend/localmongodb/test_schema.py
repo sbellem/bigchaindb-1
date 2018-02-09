@@ -93,8 +93,11 @@ def test_create_secondary_indexes():
     indexes = conn.conn[dbname]['blocks'].index_information().keys()
     assert set(indexes) == {'_id_', 'height'}
 
-    indexes = conn.conn[dbname]['utxos'].index_information().keys()
-    assert set(indexes) == {'_id_', 'utxo'}
+    index_info = conn.conn[dbname]['utxos'].index_information()
+    assert set(index_info.keys()) == {'_id_', 'utxo'}
+    assert index_info['utxo']['unique']
+    assert index_info['utxo']['key'] == [('transaction_id', 1),
+                                         ('output_index', 1)]
 
 
 def test_drop(dummy_db):

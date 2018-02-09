@@ -105,8 +105,8 @@ def create_metadata_secondary_index(conn, dbname):
 def create_utxos_secondary_index(conn, dbname):
     logger.info('Create `utxos` secondary index.')
 
-    conn.conn[dbname]['utxos']\
-        .create_index([
-            ('transaction_id', ASCENDING),
-            ('output_index', ASCENDING),
-        ], name='utxo')
+    conn.conn[dbname]['utxos'].create_index(
+        [('transaction_id', ASCENDING), ('output_index', ASCENDING)],
+        name='utxo',
+        unique=True,
+    )
