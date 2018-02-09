@@ -2,7 +2,6 @@ from copy import deepcopy
 
 import pytest
 import pymongo
-from pymongo import MongoClient
 
 pytestmark = [pytest.mark.tendermint, pytest.mark.localmongodb, pytest.mark.bdb]
 
@@ -17,9 +16,7 @@ def dummy_unspent_outputs():
 
 
 @pytest.fixture
-def utxoset(dummy_unspent_outputs, db_context):
-    mongo_client = MongoClient(host=db_context.host, port=db_context.port)
-    utxo_collection = mongo_client[db_context.name].utxos
+def utxoset(dummy_unspent_outputs, utxo_collection):
     insert_res = utxo_collection.insert_many(deepcopy(dummy_unspent_outputs))
     assert insert_res.acknowledged
     assert len(insert_res.inserted_ids) == 3
@@ -218,10 +215,9 @@ def test_delete_unspent_outputs(db_context, utxoset):
             {'transaction_id': 'a', 'output_index': 1}).count() == 1
 
 
-def test_store_one_unspent_output(db_context, unspent_output_1):
+def test_store_one_unspent_output(db_context,
+                                  unspent_output_1, utxo_collection):
     from bigchaindb.backend import query
-    mongo_client = MongoClient(host=db_context.host, port=db_context.port)
-    utxo_collection = mongo_client[db_context.name].utxos
     res = query.store_unspent_outputs(db_context.conn, unspent_output_1)
     assert res.acknowledged
     assert len(res.inserted_ids) == 1
@@ -231,10 +227,9 @@ def test_store_one_unspent_output(db_context, unspent_output_1):
     ).count() == 1
 
 
-def test_store_many_unspent_outputs(db_context, unspent_outputs):
+def test_store_many_unspent_outputs(db_context,
+                                    unspent_outputs, utxo_collection):
     from bigchaindb.backend import query
-    mongo_client = MongoClient(host=db_context.host, port=db_context.port)
-    utxo_collection = mongo_client[db_context.name].utxos
     res = query.store_unspent_outputs(db_context.conn, *unspent_outputs)
     assert res.acknowledged
     assert len(res.inserted_ids) == 3
