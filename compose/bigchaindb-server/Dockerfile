@@ -30,3 +30,6 @@ COPY . /usr/src/app/
 WORKDIR /usr/src/app
 RUN pip install --no-cache-dir -e .[dev]
 RUN bigchaindb -y configure "$backend"
+
+# TODO tmp for testing in travis for codecov
+RUN touch .coverage
