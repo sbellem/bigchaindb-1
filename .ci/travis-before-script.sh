@@ -4,5 +4,6 @@ set -e -x
 
 if [[ "${BIGCHAINDB_DATABASE_BACKEND}" == localmongodb && \
         -z "${BIGCHAINDB_DATABASE_SSL}" ]]; then
-    docker-compose -f docker-compose.tendermint.yml up -d bdb
+    docker-compose -f docker-compose.tendermint.yml up -d tendermint
+    sleep 10
 fi
