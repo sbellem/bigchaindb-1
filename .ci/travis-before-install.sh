@@ -1,13 +1,13 @@
 #!/bin/bash
 
 if [[ -z ${TOXENV} ]]; then
-    sudo apt-get update
-    sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
+    #sudo apt-get update
+    #sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
 
-    sudo rm /usr/local/bin/docker-compose
-    curl -L https://github.com/docker/compose/releases/download/1.19.0/docker-compose-`uname -s`-`uname -m` > docker-compose
-    chmod +x docker-compose
-    sudo mv docker-compose /usr/local/bin
+    #sudo rm /usr/local/bin/docker-compose
+    #curl -L https://github.com/docker/compose/releases/download/1.19.0/docker-compose-`uname -s`-`uname -m` > docker-compose
+    #chmod +x docker-compose
+    #sudo mv docker-compose /usr/local/bin
 
     docker pull python:3.6
     docker pull tendermint/tendermint:0.13
