@@ -2,12 +2,12 @@
 
 set -e -x
 
-docker-compose build --no-cache
-#pip install --upgrade pip
-#
-#if [[ -n ${TOXENV} ]]; then
-#    pip install --upgrade tox
-#else
-#    pip install .[test]
-#    pip install --upgrade codecov
-#fi
+pip install --upgrade pip
+
+if [[ -n ${TOXENV} ]]; then
+    pip install --upgrade tox
+else
+    docker-compose build --no-cache
+    #pip install .[test]
+    pip install --upgrade codecov
+fi
