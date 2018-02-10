@@ -3,7 +3,7 @@
 set -e -x
 
 if [[ -n ${TOXENV} ]]; then
-  docker-compose -f docker-compose.tendermint.yml run --rm --no-deps bdb tox -e ${TOXENV}
+  tox -e ${TOXENV}
 elif [[ "${BIGCHAINDB_DATABASE_BACKEND}" == localmongodb && \
     -z "${BIGCHAINDB_DATABASE_SSL}" ]]; then
   docker-compose -f docker-compose.tendermint.yml run --rm --no-deps bdb pytest -v --cov=bigchaindb
