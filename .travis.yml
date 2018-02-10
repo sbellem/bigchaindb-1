@@ -1,6 +1,6 @@
 sudo: required
 
-#dist: trusty
+dist: trusty
 
 services:
   - docker
@@ -12,9 +12,12 @@ python:
   - 3.6
 
 env:
-  - TOXENV=flake8
-  - TOXENV=docsroot
-  - TOXENV=docsserver
+  global:
+    - COVERAGE_FILE=${TRAVIS_BUILD_DIR}/tests/.coverage
+  matrix:
+    - TOXENV=flake8
+    - TOXENV=docsroot
+    - TOXENV=docsserver
 
 matrix:
   fast_finish: true
