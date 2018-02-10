@@ -3,6 +3,9 @@
 set -e -x
 
 if [[ -z ${TOXENV} ]]; then
-    codecov
-    #codecov -v --root ${TRAVIS_BUILD_DIR}/bigchaindb --gcov-root ${TRAVIS_BUILD_DIR}/bigchaindb
+    #codecov
+    ls -al ${TRAVIS_BUILD_DIR}/bigchaindb/.coverage
+    codecov -v --root ${TRAVIS_BUILD_DIR}/bigchaindb --gcov-root ${TRAVIS_BUILD_DIR}/bigchaindb
+    ls -al ${TRAVIS_BUILD_DIR}/bigchaindb/coverage.xml
+    ls -al ${TRAVIS_BUILD_DIR}/coverage.xml
 fi
