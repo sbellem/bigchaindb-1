@@ -31,6 +31,8 @@ services:
       BIGCHAINDB_START_TENDERMINT: 0
       TENDERMINT_HOST: tendermint
       TENDERMINT_PORT: 46657
+      # TODO move into dedicated docker-compose travis file
+      COVERAGE_FILE: /usr/src/app/bigchaindb/tests/.coverage
     ports:
       - "9984"
       - "46658:46658"
