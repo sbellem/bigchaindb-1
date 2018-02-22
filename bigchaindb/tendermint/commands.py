@@ -9,6 +9,7 @@ from bigchaindb.tendermint.core import App
 from bigchaindb.web import server, websocket_server
 from bigchaindb.tendermint import event_stream
 from bigchaindb.events import Exchange, EventTypes
+from bigchaindb.commands.bigchaindb import run_recover
 
 
 logger = logging.getLogger(__name__)
@@ -69,6 +70,8 @@ def start():
 
     app = ABCIServer(app=App())
     app.run()
+
+    run_recover(BigchainDB())
 
 
 if __name__ == '__main__':

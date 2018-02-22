@@ -193,7 +193,7 @@ def run_start(args):
     """Start the processes to run the node"""
     logger.info('BigchainDB Version %s', bigchaindb.__version__)
 
-    run_recover(BigchainDB())
+    #run_recover(BigchainDB())
 
     if args.allow_temp_keypair:
         if not (bigchaindb.config['keypair']['private'] or
